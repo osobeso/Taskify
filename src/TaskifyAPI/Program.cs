@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Taskify.AzureTables;
-using TaskifyAPI.Dtos;
 using TaskifyAPI.Managers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,82 +29,6 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
-
-app.MapPost("/task", async (CreateNewTaskDto dto, ITaskifyManager manager, ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("post_task");
-    try
-    {
-        var result = await manager.CreateNewTaskAsync(dto);
-        return Results.Ok(result);
-    }
-    catch(Exception ex)
-    {
-        logger.LogError("Exception: {Message}", ex.Message);
-        return Results.Problem();
-    }
-});
-
-
-app.MapGet("/tasks", async (ITaskifyManager manager, ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("get_tasks");
-    try
-    {
-        var result = await manager.GetRootTasksAsync();
-        return Results.Ok(result);
-    } 
-    catch (Exception ex)
-    {
-        logger.LogError("Exception: {Message}", ex.Message);
-        return Results.Problem();
-    }
-});
-
-app.MapGet("/task/{id}", async (Guid id, [FromQuery] Guid? parentId, ITaskifyManager manager, ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("get_tasks");
-    try
-    {
-        var result = await manager.GetTaskDetailsAsync(new TaskKey(id, parentId));
-        return Results.Ok(result);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError("Exception: {Message}", ex.Message);
-        return Results.Problem();
-    }
-});
-
-app.MapPut("/task", async (UpdateTaskDto dto, ITaskifyManager manager, ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("put_task");
-    try
-    {
-        var result = await manager.UpdateTaskAsync(dto);
-        return Results.Ok(result);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError("Exception: {Message}", ex.Message);
-        return Results.Problem();
-    }
-});
-
-app.MapPut("/task/parent", async (SetParentTaskDto dto, ITaskifyManager manager, ILoggerFactory loggerFactory) =>
-{
-    var logger = loggerFactory.CreateLogger("set_parent_task");
-    try
-    {
-        var result = await manager.SetParentAsync(dto);
-        return Results.Ok(result);
-    }
-    catch (Exception ex)
-    {
-        logger.LogError("Exception: {Message}", ex.Message);
-        return Results.Problem();
-    }
-});
 
 
 app.UseSwagger();
